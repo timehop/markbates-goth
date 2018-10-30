@@ -215,7 +215,15 @@ func validateState(req *http.Request, sess goth.Session) error {
 	}
 
 	originalState := authURL.Query().Get("state")
-	if originalState != "" && (originalState != req.URL.Query().Get("state")) {
+	requestState := req.URL.Query().Get("state")
+	// check to see if the length is not the same
+	// if they aren't try trimming the padding to fix a potential instagram bug
+	if len(originalState) != len(requestState) {
+		originalState = strings.TrimRight(originalState, "=")
+		requestState = strings.TrimRight(requestState, "=")
+	}
+
+	if originalState != "" && (originalState != requestState) {
 		return errors.New("state token mismatch")
 	}
 	return nil
