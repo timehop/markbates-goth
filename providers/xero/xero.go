@@ -11,12 +11,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 	"time"
-
-	"golang.org/x/oauth2"
 
 	"github.com/markbates/goth"
 	"github.com/mrjones/oauth"
+	"golang.org/x/oauth2"
 )
 
 //Organisation is the expected response from the Organisation endpoint - this is not a complete schema
@@ -67,6 +67,8 @@ func New(clientKey, secret, callbackURL string) *Provider {
 		Method:       os.Getenv("XERO_METHOD"),
 		providerName: "xero",
 	}
+	p.mu.Lock()
+	defer p.mu.Unlock()
 
 	switch p.Method {
 	case "private":
@@ -83,6 +85,7 @@ func New(clientKey, secret, callbackURL string) *Provider {
 
 // Provider is the implementation of `goth.Provider` for accessing Xero.
 type Provider struct {
+	mu           sync.Mutex
 	ClientKey    string
 	Secret       string
 	CallbackURL  string
@@ -116,6 +119,9 @@ func (p *Provider) Debug(debug bool) {
 // BeginAuth asks Xero for an authentication end-point and a request token for a session.
 // Xero does not support the "state" variable.
 func (p *Provider) BeginAuth(state string) (goth.Session, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	requestToken, url, err := p.consumer.GetRequestTokenAndUrl(p.CallbackURL)
 	if err != nil {
 		return nil, err
@@ -129,6 +135,9 @@ func (p *Provider) BeginAuth(state string) (goth.Session, error) {
 
 // FetchUser will go to Xero and access basic information about the user.
 func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	sess := session.(*Session)
 	user := goth.User{
 		Provider: p.Name(),

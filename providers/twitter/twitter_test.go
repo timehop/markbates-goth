@@ -32,11 +32,11 @@ func Test_Implements_Provider(t *testing.T) {
 }
 
 func Test_BeginAuth(t *testing.T) {
-	t.Parallel()
 	a := assert.New(t)
 
 	mockTwitter(func(ts *httptest.Server) {
 		provider := twitterProvider()
+
 		session, err := provider.BeginAuth("state")
 		s := session.(*Session)
 		a.NoError(err)
@@ -56,13 +56,11 @@ func Test_BeginAuth(t *testing.T) {
 }
 
 func Test_FetchUser(t *testing.T) {
-	t.Parallel()
 	a := assert.New(t)
 
 	mockTwitter(func(ts *httptest.Server) {
 		provider := twitterProvider()
 		session := Session{AccessToken: &oauth.AccessToken{Token: "TOKEN", Secret: "SECRET"}}
-
 		user, err := provider.FetchUser(&session)
 		a.NoError(err)
 
