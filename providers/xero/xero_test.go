@@ -32,7 +32,6 @@ func Test_Implements_Provider(t *testing.T) {
 }
 
 func Test_BeginAuth(t *testing.T) {
-	t.Parallel()
 	a := assert.New(t)
 
 	mockXero(func(ts *httptest.Server) {
@@ -50,9 +49,7 @@ func Test_BeginAuth(t *testing.T) {
 }
 
 func Test_FetchUser(t *testing.T) {
-	t.Parallel()
 	a := assert.New(t)
-
 	mockXero(func(ts *httptest.Server) {
 		provider := xeroProvider()
 		session := Session{AccessToken: &oauth.AccessToken{Token: "TOKEN", Secret: "SECRET"}}

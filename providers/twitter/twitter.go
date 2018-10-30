@@ -6,10 +6,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
-
-	"fmt"
+	"sync"
 
 	"github.com/markbates/goth"
 	"github.com/mrjones/oauth"
@@ -36,7 +36,9 @@ func New(clientKey, secret, callbackURL string) *Provider {
 		CallbackURL:  callbackURL,
 		providerName: "twitter",
 	}
+	p.mu.Lock()
 	p.consumer = newConsumer(p, authorizeURL)
+	p.mu.Unlock()
 	return p
 }
 
@@ -55,6 +57,7 @@ func NewAuthenticate(clientKey, secret, callbackURL string) *Provider {
 
 // Provider is the implementation of `goth.Provider` for accessing Twitter.
 type Provider struct {
+	mu           sync.Mutex
 	ClientKey    string
 	Secret       string
 	CallbackURL  string
@@ -86,6 +89,8 @@ func (p *Provider) Debug(debug bool) {
 // BeginAuth asks Twitter for an authentication end-point and a request token for a session.
 // Twitter does not support the "state" variable.
 func (p *Provider) BeginAuth(state string) (goth.Session, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	requestToken, url, err := p.consumer.GetRequestTokenAndUrl(p.CallbackURL)
 	session := &Session{
 		AuthURL:      url,
@@ -96,6 +101,8 @@ func (p *Provider) BeginAuth(state string) (goth.Session, error) {
 
 // FetchUser will go to Twitter and access basic information about the user.
 func (p *Provider) FetchUser(session goth.Session) (goth.User, error) {
+	p.mu.Lock()
+	defer p.mu.Unlock()
 	sess := session.(*Session)
 	user := goth.User{
 		Provider: p.Name(),
