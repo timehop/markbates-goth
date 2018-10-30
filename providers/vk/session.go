@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/markbates/goth"
+	"github.com/timehop/markbates-goth"
 )
 
 // Session stores data during the auth process with VK.

@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/markbates/goth"
+	"github.com/timehop/markbates-goth"
 	"github.com/mrjones/oauth"
 	"golang.org/x/oauth2"
 )

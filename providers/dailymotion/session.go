@@ -3,7 +3,7 @@ package dailymotion
 import (
 	"encoding/json"
 	"errors"
-	"github.com/markbates/goth"
+	"github.com/timehop/markbates-goth"
 	"golang.org/x/oauth2"
 	"strings"
 	"time"

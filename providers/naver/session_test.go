@@ -3,9 +3,9 @@ package naver_test
 import (
 	"testing"
 
-	"github.com/markbates/goth"
+	"github.com/timehop/markbates-goth"
 	"github.com/stretchr/testify/assert"
-	"github.com/markbates/goth/providers/naver"
+	"github.com/timehop/markbates-goth/providers/naver"
 )
 
 func Test_Implements_Session(t *testing.T) {
